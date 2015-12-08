@@ -3,7 +3,7 @@
 A purely functional language that compiles to Python. Basically this works by translating the funcpy functions into many, many Python lambdas. Uses Flex/Bison to do the actual parsing.
 
 ## Dependecies
-funcpy requires flex and bison:
+funcpy uses Flex/Bison to do the actual parsing.\n
   For ubuntu installs:
   ```bash
   $ sudo apt-get install bison flex
