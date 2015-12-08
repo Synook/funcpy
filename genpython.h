@@ -1,3 +1,4 @@
 #include "ast.h"
+#include <stdio.h>
 
-void genpython(program_t *program);
+void genpython(FILE *, program_t *program);

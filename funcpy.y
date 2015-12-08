@@ -1,14 +1,19 @@
 %{
   #include <stdio.h>
   #include <stdlib.h>
+  #include <string.h>
   #include "ast.h"
   #include "genpython.h"
+  #include "stack.h"
 
   // stuff from flex that bison needs to know about:
   extern int yylex();
   extern int yyparse();
   extern FILE *yyin;
   program_t *funcpy_program;
+  void parse(FILE *, FILE *);
+  char *concat(char *, char *);
+  char_stack_t *files;
 
   void yyerror(const char *s);
 %}
@@ -22,7 +27,9 @@
   expression_t *expression;
   func_call_t *func_call;
   args_t *args;
-  literal_t *literal_struct;
+  literal_t *literal;
+  include_t* include;
+
 }
 
 %token ALIAS
@@ -45,6 +52,7 @@
 %type <func_call> func_call;
 %type <args> args;
 %type <expression> list;
+%type <include> include;
 
 %%
 
@@ -55,14 +63,33 @@ funcpy:
   ;
 
 program:
+  include program {
+    program_t *f = malloc(sizeof(program_t));
+    f->include = $1;
+    f->function = NULL;
+    f->program = $2;
+    $$ = f;
+  }
+  |
   function program {
     program_t *f = malloc(sizeof(program_t));
     f->function = $1;
+    f->include = NULL;
     f->program = $2;
     $$ = f;
   }
   | {
     $$ = NULL;
+  }
+  ;
+
+include:
+  INCLUDE ID SEMICOLON {
+    include_t *include = malloc(sizeof(include_t));
+    char *name = $2;
+    include->filename = name;
+    stack_push(files, name);
+    $$ = include;
   }
   ;
 
@@ -190,10 +217,40 @@ args:
 %%
 
 int main(int args, char **argv) {
-	do {
+  if (args < 2) {
+    printf("error: not enough args\n");
+    exit(-1);
+  }
+  char *name;
+  files = stack_new();
+  stack_push(files, argv[1]);
+  while ((name = stack_pop(files))) {
+    printf("%s.fpy -> ", name);
+  //printf("%s -> %s\n", argv[1], argv[2]);
+    FILE *infile = fopen(concat(name, ".fpy"), "r");
+    FILE *outfile = fopen(concat(name, ".py"), "w");
+    parse(infile, outfile);
+    printf("%s.py\n", name);
+  }
+	/*do {
 		yyparse();
 	} while (!feof(yyin));
-  genpython(funcpy_program);
+  genpython(funcpy_program);*/
+}
+
+void parse(FILE *infile, FILE *outfile) {
+  yyin = infile;
+  do {
+		yyparse();
+	} while (!feof(yyin));
+  genpython(outfile, funcpy_program);
+}
+
+char *concat(char *a, char *b) {
+  char *concated = malloc(strlen(a) + strlen(b) + 1);
+  concated[strlen(a) + strlen(b)] = '\0';
+  sprintf(concated, "%s%s", a, b);
+  return concated;
 }
 
 void yyerror(const char *s) {

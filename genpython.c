@@ -3,48 +3,52 @@
 #include <stdlib.h>
 #include <string.h>
 
-void print_expr(expression_t *);
-void print_literal(literal_t *);
+void print_expr(FILE *, expression_t *);
+void print_literal(FILE *, literal_t *);
 char *transform_name(char *s);
 
-void genpython(program_t *program) {
-  printf("from primitives import *\n");
+void genpython(FILE *f, program_t *program) {
+  fprintf(f, "from primitives import *\n");
   do {
-    function_t *f = program->function;
-    params_t *params = f->params;
-    printf("%s = ", transform_name(f->name));
-    while (params != NULL) {
-      printf("lambda %s: ", transform_name(params->name));
-      params = params->params;
+    if (program->function != NULL) {
+      function_t *function = program->function;
+      params_t *params = function->params;
+      fprintf(f, "%s = ", transform_name(function->name));
+      while (params != NULL) {
+        fprintf(f, "lambda %s: ", transform_name(params->name));
+        params = params->params;
+      }
+      if (function->params != NULL) fprintf(f, "lambda: ");
+      print_expr(f, function->expression);
+      if (function->params != NULL) fprintf(f, "()");
+    } else {
+      fprintf(f, "from %s import *", program->include->filename);
     }
-    if (f->params != NULL) printf("lambda: ");
-    print_expr(f->expression);
-    if (f->params != NULL) printf("()");
-    printf("\n");
+    fprintf(f, "\n");
 
   } while ((program = program->program));
-  printf("fpy_main()\n");
+  fprintf(f, "if __name__ == '__main__': fpy_main()\n");
 }
 
-void print_expr(expression_t *expr) {
+void print_expr(FILE *f, expression_t *expr) {
   if (expr->literal == NULL) {
-    if (expr->func_call->args != NULL) printf("(");
-    printf("%s", transform_name(expr->func_call->name));
+    if (expr->func_call->args != NULL) fprintf(f, "(");
+    fprintf(f, "%s", transform_name(expr->func_call->name));
     args_t *args = expr->func_call->args;
     while (args != NULL) {
-      printf("(");
-      print_expr(args->expression);
+      fprintf(f, "(");
+      print_expr(f, args->expression);
       args = args->args;
-      printf(")");
+      fprintf(f, ")");
     }
-    if (expr->func_call->args != NULL) printf(")");
+    if (expr->func_call->args != NULL) fprintf(f, ")");
   } else {
-    print_literal(expr->literal);
+    print_literal(f, expr->literal);
   }
 }
 
-void print_literal(literal_t *literal) {
-  printf("lit(%s)", literal->value);
+void print_literal(FILE *f, literal_t *literal) {
+  fprintf(f, "lit(%s)", literal->value);
 }
 
 char *transform_name(char *s) {

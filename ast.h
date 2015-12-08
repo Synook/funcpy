@@ -2,6 +2,7 @@
 #define FUNCPY_AST_H
 
 typedef struct program_struct program_t;
+typedef struct include_struct include_t;
 typedef struct function_struct function_t;
 typedef struct params_struct params_t;
 typedef struct expression_struct expression_t;
@@ -11,7 +12,12 @@ typedef struct literal_struct literal_t;
 
 struct program_struct {
   function_t *function;
+  include_t *include;
   program_t *program;
+};
+
+struct include_struct {
+  char *filename;
 };
 
 struct function_struct {
