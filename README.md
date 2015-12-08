@@ -5,7 +5,7 @@ A purely functional language that compiles to Python. Basically this works by tr
 ## Dependecies
 funcpy uses Flex/Bison to do the actual parsing.
 
-For ubuntu installs:
+For ubuntu/debian installs:
   ```bash
   $ sudo apt-get install bison flex
   ```
