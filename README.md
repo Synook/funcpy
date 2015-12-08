@@ -2,12 +2,12 @@
 # funcpy
 A purely functional language that compiles to Python. Basically this works by translating the funcpy functions into many, many Python lambdas. Uses Flex/Bison to do the actual parsing.
 
-# Dependecies
+## Dependecies
 funcpy requires flex and bison:
   For ubuntu installs:
   $sudo apt-get install bison flex
 
-# Instructions
+## Instructions
 ```bash
 $ make
 $ cd examples
