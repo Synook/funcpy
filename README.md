@@ -5,8 +5,9 @@ A purely functional language that compiles to Python. Basically this works by tr
 ## Dependecies
 funcpy requires flex and bison:
   For ubuntu installs:
-  $sudo apt-get install bison flex
-
+  ```bash
+  $ sudo apt-get install bison flex
+  ```
 ## Instructions
 ```bash
 $ make
