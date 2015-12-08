@@ -1,5 +1,7 @@
 flip f a b -> (f b a);
 < -> (flip >);
+! a -> (? a false true);
+!= a b -> (! (== a b));
 min a b -> (? (< a b) a b);
 length xs -> (? (== xs [])
   0 (+ 1 (length (tail xs)))

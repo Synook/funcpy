@@ -17,7 +17,7 @@
 "]" { return RBRACKET; }
 "include" { return INCLUDE; }
 "," { return COMMA; }
-\"[^\"]*\" {
+\"([^\"]|[^\\]\\\")*\" {
   yylval.id = strdup(yytext);
   return STRING;
 }
