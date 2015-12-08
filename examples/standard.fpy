@@ -1,3 +1,36 @@
+# python translation code
+{{
+lit = lambda n: lambda: n # literal function
+sym_4200 = fpy_multiply = lambda a: lambda b: lambda: a () * b ()
+sym_4500 = fpy_minus = lambda a: lambda b: lambda: a () - b ()
+sym_4300 = fpy_plus = lambda a: lambda b: lambda: a () + b ()
+sym_4700 = fpy_div = lambda a: lambda b: lambda: a () / b ()
+sym_6200 = fpy_gt = lambda a: lambda b: lambda: a () > b ()
+sym_6161 = fpy_eq = lambda a: lambda b: lambda: a () == b ()
+sym_6300 = fpy_choice = lambda cond: lambda t: lambda f: lambda: (
+    t () if cond () else f ()
+) # ?
+fpy_emptylist = lambda: [] # i.e., [] in haskell
+sym_5800 = fpy_cons = lambda x: lambda xs: lambda: (x, xs) # :
+fpy_head = lambda xs: lambda: xs()[0]()
+fpy_tail = lambda xs: lambda: xs()[1]()
+sym_4242 = fpy_concat = lambda xs: lambda ys: lambda: (
+    None
+)
+fpy_false = lambda: False
+fpy_true = lambda: True
+
+def fpy_dirty_print (a):
+    print(printr(a))
+    return a
+def printr (a, inside = False):
+    if type(a ()) is tuple:
+        lstr = "%s:%s" % (printr(a()[0],True),printr(a()[1]))
+        return "(%s)" % lstr if inside else lstr
+    else: return a ()
+}}
+
+# basic functions
 ! a -> (? a false true);
 != a b -> (! (== a b));
 or a b -> (? a true (? b true false));
@@ -7,6 +40,7 @@ flip f a b -> (f b a);
 >= a b -> (! (< a b));
 <= a b -> (! (> a b));
 
+# list functions
 foldr f v xs -> (? (== xs [])
   v (f (head xs) (foldr f v (tail xs)))
 );
@@ -16,10 +50,7 @@ foldr1 f xs -> (? (== (tail xs) [])
 foldl f v xs -> (? (== xs [])
   v (foldl f (f v (head xs)) (tail xs))
 );
-++ xs ys -> (reverse_concat (reverse xs) ys);
-reverse_concat xs ys -> (? (== xs [])
-  ys (reverse_concat (tail xs) (: (head xs) (ys)))
-);
+++ xs ys -> (foldr : ys xs);
 reverse -> (foldl (flip :) []);
 length xs -> (? (== xs [])
   0 (+ 1 (length (tail xs)))
@@ -38,6 +69,7 @@ zip xs ys -> (? (or (== xs []) (== ys []))
   [] (: [(head xs), (head ys)] (zip (tail xs) (tail ys)))
 );
 
+# other functions
 min a b -> (? (< a b) a b);
 range a b -> (? (== a b)
   [] (: a (range (+ a 1) b))

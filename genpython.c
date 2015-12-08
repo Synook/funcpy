@@ -8,7 +8,7 @@ void print_literal(FILE *, literal_t *);
 char *transform_name(char *s);
 
 void genpython(FILE *f, program_t *program) {
-  fprintf(f, "from primitives import *\n");
+  //fprintf(f, "from primitives import *\n");
   do {
     if (program->function != NULL) {
       function_t *function = program->function;
@@ -21,6 +21,8 @@ void genpython(FILE *f, program_t *program) {
       if (function->params != NULL) fprintf(f, "lambda: ");
       print_expr(f, function->expression);
       if (function->params != NULL) fprintf(f, "()");
+    } else if (program->pythonblock != NULL) {
+      fprintf(f, "%s", program->pythonblock->python);
     } else {
       fprintf(f, "from %s import *", program->include->filename);
     }

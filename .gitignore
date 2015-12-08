@@ -3,3 +3,4 @@ funcpy
 funcpy.tab.*
 lex.yy.*
 *.pyc
+*.py

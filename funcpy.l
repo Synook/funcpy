@@ -18,6 +18,14 @@
 "include" { return INCLUDE; }
 "," { return COMMA; }
 
+"{{"([}]?[^}])*"}}" {
+  yylval.id = strdup(yytext) + 2;
+  yylval.id[strlen(yylval.id) - 3] = '\0';
+  return PYTHONBLOCK;
+}
+
+#.*
+
 \"([^\"]|[^\\]\\\")*\" {
   yylval.id = strdup(yytext);
   return STRING;

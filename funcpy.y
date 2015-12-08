@@ -29,7 +29,6 @@
   args_t *args;
   literal_t *literal;
   include_t* include;
-
 }
 
 %token ALIAS
@@ -44,6 +43,7 @@
 %token <id> NUMBER;
 %token <id> ID;
 %token <id> STRING;
+%token <id> PYTHONBLOCK;
 
 %type <program> program funcpy;
 %type <function> function;
@@ -67,6 +67,7 @@ program:
     program_t *f = malloc(sizeof(program_t));
     f->include = $1;
     f->function = NULL;
+    f->pythonblock = NULL;
     f->program = $2;
     $$ = f;
   }
@@ -75,6 +76,16 @@ program:
     program_t *f = malloc(sizeof(program_t));
     f->function = $1;
     f->include = NULL;
+    f->pythonblock = NULL;
+    f->program = $2;
+    $$ = f;
+  }
+  | PYTHONBLOCK program {
+    program_t *f = malloc(sizeof(program_t));
+    f->function = NULL;
+    f->include = NULL;
+    f->pythonblock = malloc(sizeof(pythonblock_t));
+    f->pythonblock->python = $1;
     f->program = $2;
     $$ = f;
   }

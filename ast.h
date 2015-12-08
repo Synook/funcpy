@@ -9,11 +9,17 @@ typedef struct expression_struct expression_t;
 typedef struct func_call_struct func_call_t;
 typedef struct args_struct args_t;
 typedef struct literal_struct literal_t;
+typedef struct pythonblock_struct pythonblock_t;
 
 struct program_struct {
   function_t *function;
   include_t *include;
+  pythonblock_t *pythonblock;
   program_t *program;
+};
+
+struct pythonblock_struct {
+  char *python;
 };
 
 struct include_struct {
