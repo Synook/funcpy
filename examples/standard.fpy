@@ -4,7 +4,23 @@ or a b -> (? a true (? b true false));
 and a b -> (? a (? b true false) false);
 flip f a b -> (f b a);
 < -> (flip >);
+>= a b -> (! (< a b));
+<= a b -> (! (> a b));
 
+foldr f v xs -> (? (== xs [])
+  v (f (head xs) (foldr f v (tail xs)))
+);
+foldr1 f xs -> (? (== (tail xs) [])
+  (head xs) (f (head xs) (foldr f (tail xs)))
+);
+foldl f v xs -> (? (== xs [])
+  v (foldl f (f v (head xs)) (tail xs))
+);
+++ xs ys -> (reverse_concat (reverse xs) ys);
+reverse_concat xs ys -> (? (== xs [])
+  ys (reverse_concat (tail xs) (: (head xs) (ys)))
+);
+reverse -> (foldl (flip :) []);
 length xs -> (? (== xs [])
   0 (+ 1 (length (tail xs)))
 );
@@ -15,12 +31,6 @@ filter f xs -> (? (== xs [])
   [] (? (f (head xs))
     (: (head xs) (filter f (tail xs))) (filter f (tail xs))
   )
-);
-foldr f v xs -> (? (== xs [])
-  v (f (head xs) (foldr f v (tail xs)))
-);
-foldr1 f xs -> (? (== (tail xs) [])
-  (head xs) (f (head xs) (foldr f (tail xs)))
 );
 fst -> head;
 snd xs -> (head (tail xs));

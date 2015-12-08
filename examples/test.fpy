@@ -3,10 +3,12 @@ include standard;
 doubleUs x y -> (+ (* x 2) (* y 2));
 doubleSmallNumber x -> (? (> x 100) x (* x 2));
 
+
 main1 -> (map (+ 1) [1, (min 1 2), 3, 4, 5]);
 main2 -> (min 1 2);
 main3 -> (doubleUs 3 5);
-main4 -> (doubleSmallNumber 500);
+main4 -> (tail [1]);
 main5 -> (zip [1,2,3] [4,5,6]);
 main6 -> (filter (< 2) [1,2,3,4]);
-main -> (dirty_print main6);
+main7 -> (++ [1,2,3] [4,5,6]);
+main -> (dirty_print main7);
