@@ -34,8 +34,9 @@
 %token INCLUDE;
 %token COMMA;
 
-%token <id> NUMBER
-%token <id> ID
+%token <id> NUMBER;
+%token <id> ID;
+%token <id> STRING;
 
 %type <program> program funcpy;
 %type <function> function;
@@ -105,6 +106,15 @@ expression:
     $$ = expression;
   }
   | NUMBER {
+    literal_t *literal = malloc(sizeof(literal_t));
+    literal->value = $1;
+
+    expression_t *expression = malloc(sizeof(expression_t));
+    expression->literal = literal;
+    expression->func_call = NULL;
+    $$ = expression;
+  }
+  | STRING {
     literal_t *literal = malloc(sizeof(literal_t));
     literal->value = $1;
 

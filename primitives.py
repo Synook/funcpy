@@ -15,6 +15,8 @@ fpy_tail = lambda xs: lambda: xs()[1]()
 sym_4242 = fpy_concat = lambda xs: lambda ys: lambda: (
     None
 )
+fpy_false = lambda: False
+fpy_true = lambda: True
 
 def fpy_dirty_print (a):
     print(printr(a))
