@@ -1,0 +1,19 @@
+flip f a b -> (f b a);
+< -> (flip >);
+min a b -> (? (< a b) a b);
+length xs -> (? (== xs [])
+  0 (+ 1 (length (tail xs)))
+);
+map f xs -> (? (== xs [])
+  []
+  (: (f (head xs)) (map f (tail xs)))
+);
+
+doubleUs x y -> (+ (* x 2) (* y 2));
+doubleSmallNumber x -> (? (> x 100) x (* x 2));
+
+main1 -> (map (+ 1) [1, (min 1 2), 3, 4, 5]);
+main2 -> (min 1 2);
+main3 -> (doubleUs 3 5);
+main4 -> (doubleSmallNumber 500);
+main -> (dirty_print main1);
