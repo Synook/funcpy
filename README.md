@@ -6,9 +6,9 @@ A purely functional language that compiles to Python. Basically this works by tr
 funcpy uses Flex/Bison to do the actual parsing.
 
 For ubuntu/debian installs:
-  ```bash
-  $ sudo apt-get install bison flex
-  ```
+```bash
+$ sudo apt-get install bison flex
+```
 ## Instructions
 ```bash
 $ make
