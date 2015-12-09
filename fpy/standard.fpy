@@ -29,12 +29,8 @@ foldl f v xs -> (? (== xs [])
 foldl1 f xs -> (foldl f (head xs) (tail xs));
 ++ xs ys -> (foldr : ys xs);
 reverse -> (foldl (flip :) []);
-length xs -> (? (== xs [])
-  0 (+ 1 (length (tail xs)))
-);
-map f xs -> (? (== xs [])
-  [] (: (f (head xs)) (map f (tail xs)))
-);
+length -> (foldr (\x -> (+ 1)) 0);
+map f -> (foldr (\x -> (: (f x))) []);
 filter f xs -> (? (== xs [])
   [] (? (f (head xs))
     (: (head xs) (filter f (tail xs))) (filter f (tail xs))
