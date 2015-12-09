@@ -9,8 +9,8 @@ $ ../funcpy test
 ```
 
 ## To do
-* List comprehension
-* Pattern matching
-* Guards
+* List comprehension (not really necessary)
+* Pattern matching (not really necessary)
+* Guards (not really necessary)
 * *Monads* - very important. At least an IO interface with stdin/stdout.
 * Ideally, some sort of non-functional representation where new types (probably monads) can be defined for file IO, networking or anything that can't be represented functionally.

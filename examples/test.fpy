@@ -4,14 +4,6 @@ doubleUs x y -> (+ (* x 2) (* y 2));
 doubleSmallNumber x -> (? (> x 100) x (* x 2));
 
 main -> (dirty_print [
-  (map (+ 1) [1, (min 1 2), 3, 4, 5]), # map, min
-  (doubleUs 3 5),
-  (tail [1]),
-  (zip [1,2,3] [4,5,6]),
-  (filter (< 2) [1,2,3,4]),
-  (++ [1,2,3] [4,5,6]),
-  ((. (+ 1) (* 2)) 5),
-  (take 5 (repeat 1)),
-  (last [1,2]),
-  (foldr1 / [8,12,24,4])
+  (filter (\x -> (> x 1)) [1,2,3,4]),
+  (\ -> 1)
 ]);

@@ -4,7 +4,7 @@
 #include <string.h>
 
 void print_expr(FILE *, expression_t *);
-void print_literal(FILE *, literal_t *);
+void print_func(FILE *, params_t *, expression_t *);
 char *transform_name(char *s);
 
 void genpython(FILE *f, program_t *program) {
@@ -14,13 +14,7 @@ void genpython(FILE *f, program_t *program) {
       function_t *function = program->function;
       params_t *params = function->params;
       fprintf(f, "%s = ", transform_name(function->name));
-      while (params != NULL) {
-        fprintf(f, "lambda %s: ", transform_name(params->name));
-        params = params->params;
-      }
-      if (function->params != NULL) fprintf(f, "lambda: ");
-      print_expr(f, function->expression);
-      if (function->params != NULL) fprintf(f, "()");
+      print_func(f, function->params, function->expression);
     } else if (program->pythonblock != NULL) {
       fprintf(f, "%s", program->pythonblock->python);
     } else {
@@ -30,6 +24,17 @@ void genpython(FILE *f, program_t *program) {
 
   } while ((program = program->program));
   fprintf(f, "if __name__ == '__main__': fpy_main()\n");
+}
+
+void print_func(FILE *f, params_t *params, expression_t *expression) {
+  int dummy_lambda = params != NULL;
+  while (params != NULL) {
+    fprintf(f, "lambda %s: ", transform_name(params->name));
+    params = params->params;
+  }
+  if (dummy_lambda) fprintf(f, "lambda: ");
+  print_expr(f, expression);
+  if (dummy_lambda) fprintf(f, "()");
 }
 
 void print_expr(FILE *f, expression_t *expr) {
@@ -44,15 +49,15 @@ void print_expr(FILE *f, expression_t *expr) {
       fprintf(f, ")");
     }
     fprintf(f, ")");
+  } else if (expr->lambda != NULL) {
+    fprintf(f, "(");
+    print_func(f, expr->lambda->params, expr->lambda->expression);
+    fprintf(f, ")");
   } else if (expr->literal != NULL) {
-    print_literal(f, expr->literal);
+    fprintf(f, "lit(%s)", expr->literal);
   } else {
     fprintf(f, "%s", transform_name(expr->id));
   }
-}
-
-void print_literal(FILE *f, literal_t *literal) {
-  fprintf(f, "lit(%s)", literal->value);
 }
 
 char *transform_name(char *s) {

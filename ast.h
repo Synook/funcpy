@@ -8,8 +8,8 @@ typedef struct params_struct params_t;
 typedef struct expression_struct expression_t;
 typedef struct func_call_struct func_call_t;
 typedef struct args_struct args_t;
-typedef struct literal_struct literal_t;
 typedef struct pythonblock_struct pythonblock_t;
+typedef struct lambda_struct lambda_t;
 
 struct program_struct {
   function_t *function;
@@ -39,8 +39,14 @@ struct params_struct {
 
 struct expression_struct {
   func_call_t *func_call;
-  literal_t *literal;
+  lambda_t *lambda;
+  char *literal;
   char *id;
+};
+
+struct lambda_struct {
+  params_t *params;
+  expression_t *expression;
 };
 
 struct func_call_struct {
@@ -53,8 +59,9 @@ struct args_struct {
   args_t *args;
 };
 
-struct literal_struct {
-  char *value;
-};
+#define STRUCT_NEW(V, T) \
+do { V = malloc(sizeof(T)); \
+  memset(V, 0, sizeof(T)); \
+} while (0)
 
 #endif

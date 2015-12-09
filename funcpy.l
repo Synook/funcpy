@@ -17,6 +17,9 @@
 "]" { return RBRACKET; }
 "include" { return INCLUDE; }
 "," { return COMMA; }
+"\\" {
+  return LAMBDA;
+}
 
 "{{"([}]?[^}])*"}}" {
   yylval.id = strdup(yytext) + 2;

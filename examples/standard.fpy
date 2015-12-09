@@ -80,7 +80,7 @@ repeat x -> (: x (repeat x));
 take n xs -> (? (== n 0)
   [] (: (head xs) (take (- n 1) (tail xs)))
 );
-
+!! xs n -> (? (== n 0) (head xs) (!! (tail xs) (- n 1)));
 # other functions
 min a b -> (? (< a b) a b);
 max a b -> (? (> a b) a b);

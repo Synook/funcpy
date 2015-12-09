@@ -28,7 +28,6 @@
   expression_t *expression;
   func_call_t *func_call;
   args_t *args;
-  literal_t *literal;
   include_t* include;
 }
 
@@ -40,6 +39,7 @@
 %token RBRACKET;
 %token INCLUDE;
 %token COMMA;
+%token LAMBDA;
 
 %token <id> NUMBER;
 %token <id> ID;
@@ -129,37 +129,37 @@ params:
 
 expression:
   LPAREN func_call RPAREN {
-    expression_t *expression = malloc(sizeof(expression_t));
-    expression->literal = NULL;
-    expression->id = NULL;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
     expression->func_call = $2;
     $$ = expression;
   }
+  | LPAREN LAMBDA params ALIAS expression RPAREN {
+    lambda_t *lambda;
+    STRUCT_NEW(lambda, lambda_t);
+    lambda->params = $3;
+    lambda->expression = $5;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
+    expression->lambda = lambda;
+    $$ = expression;
+  }
   | ID {
-    expression_t *expression = malloc(sizeof(expression_t));
-    expression->literal = NULL;
-    expression->func_call = NULL;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
     expression->id = $1;
     $$ = expression;
   }
   | NUMBER {
-    literal_t *literal = malloc(sizeof(literal_t));
-    literal->value = $1;
-
-    expression_t *expression = malloc(sizeof(expression_t));
-    expression->literal = literal;
-    expression->func_call = NULL;
-    expression->id = NULL;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
+    expression->literal = $1;
     $$ = expression;
   }
   | STRING {
-    literal_t *literal = malloc(sizeof(literal_t));
-    literal->value = $1;
-
-    expression_t *expression = malloc(sizeof(expression_t));
-    expression->literal = literal;
-    expression->func_call = NULL;
-    expression->id = NULL;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
+    expression->literal = $1;
     $$ = expression;
   }
   | LBRACKET list RBRACKET {
@@ -169,9 +169,8 @@ expression:
 
 list:
   expression COMMA list {
-    expression_t *expression = malloc(sizeof(expression_t));
-    expression->literal = NULL;
-    expression->id = NULL;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
     expression->func_call = malloc(sizeof(func_call_t));
     expression->func_call->expression = cons_expr;
     expression->func_call->args = malloc(sizeof(args_t));
@@ -182,9 +181,8 @@ list:
     $$ = expression;
   }
   | expression {
-    expression_t *expression = malloc(sizeof(expression_t));
-    expression->literal = NULL;
-    expression->id = NULL;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
 
     expression->func_call = malloc(sizeof(func_call_t));
     expression->func_call->expression = cons_expr;
@@ -192,17 +190,14 @@ list:
     expression->func_call->args->expression = $1;
     expression->func_call->args->args = malloc(sizeof(args_t));
 
-    expression->func_call->args->args->expression = malloc(sizeof(expression_t));
+    STRUCT_NEW(expression->func_call->args->args->expression, expression_t);
     expression->func_call->args->args->expression->id = "emptylist";
-    expression->func_call->args->args->expression->literal = NULL;
-    expression->func_call->args->args->expression->func_call = NULL;
     expression->func_call->args->args->args = NULL;
     $$ = expression;
   }
   | {
-    expression_t *expression = malloc(sizeof(expression_t));
-    expression->literal = NULL;
-    expression->func_call = NULL;
+    expression_t *expression;
+    STRUCT_NEW(expression, expression_t);
     expression->id = "emptylist";
     $$ = expression;
   }
@@ -238,9 +233,7 @@ int main(int args, char **argv) {
   char *name;
 
   files = stack_new();
-  cons_expr = malloc(sizeof(expression_t));
-  cons_expr->literal = NULL;
-  cons_expr->func_call = NULL;
+  STRUCT_NEW(cons_expr, expression_t);
   cons_expr->id = ":";
 
   stack_push(files, argv[1]);
