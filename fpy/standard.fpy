@@ -31,11 +31,7 @@ foldl1 f xs -> (foldl f (head xs) (tail xs));
 reverse -> (foldl (flip :) []);
 length -> (foldr (\x -> (+ 1)) 0);
 map f -> (foldr (\x -> (: (f x))) []);
-filter f xs -> (? (== xs [])
-  [] (? (f (head xs))
-    (: (head xs) (filter f (tail xs))) (filter f (tail xs))
-  )
-);
+filter f -> (foldr (\x acc -> (? (f x) (: x acc) acc)) []);
 fst -> head;
 snd -> (. head tail);
 last -> (foldr1 (flip const));

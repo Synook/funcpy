@@ -5,6 +5,10 @@ doubleSmallNumber x -> (? (> x 100) x (* x 2));
 
 main -> (dirty_print [
   (filter (\x -> (> x 1)) [1,2,3,4]),
+  (map (+ 1) [1,2,3]),
+  (foldr (\x acc -> (+ x acc)) 0 [1,2,3]),
   (\ -> 1),
-  (!! [1,2,3,4] 2)
+  (!! [1,2,3,4] 2),
+  (take 5 (repeat 1)),
+  ((. (* 2) (+ 5)) 5)
 ]);
