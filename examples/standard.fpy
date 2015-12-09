@@ -43,13 +43,15 @@ flip f a b -> (f b a);
 < -> (flip >);
 >= a b -> (! (< a b));
 <= a b -> (! (> a b));
+id a -> a;
+const a b -> a;
 
 # list functions
 foldr f v xs -> (? (== xs [])
   v (f (head xs) (foldr f v (tail xs)))
 );
 foldr1 f xs -> (? (== (tail xs) [])
-  (head xs) (f (head xs) (foldr f (tail xs)))
+  (head xs) (f (head xs) (foldr1 f (tail xs)))
 );
 foldl f v xs -> (? (== xs [])
   v (foldl f (f v (head xs)) (tail xs))
@@ -69,7 +71,8 @@ filter f xs -> (? (== xs [])
   )
 );
 fst -> head;
-snd xs -> (head (tail xs));
+snd -> (. head tail);
+last -> (foldr1 (flip const));
 zip xs ys -> (? (or (== xs []) (== ys []))
   [] (: [(head xs), (head ys)] (zip (tail xs) (tail ys)))
 );

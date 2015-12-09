@@ -11,5 +11,7 @@ main -> (dirty_print [
   (filter (< 2) [1,2,3,4]),
   (++ [1,2,3] [4,5,6]),
   ((. (+ 1) (* 2)) 5),
-  (take 5 (repeat 1))
+  (take 5 (repeat 1)),
+  (last [1,2]),
+  (foldr1 / [8,12,24,4])
 ]);
