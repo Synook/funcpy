@@ -54,6 +54,7 @@ foldr1 f xs -> (? (== (tail xs) [])
 foldl f v xs -> (? (== xs [])
   v (foldl f (f v (head xs)) (tail xs))
 );
+foldl1 f xs -> (foldl f (head xs) (tail xs));
 ++ xs ys -> (foldr : ys xs);
 reverse -> (foldl (flip :) []);
 length xs -> (? (== xs [])
@@ -79,6 +80,7 @@ take n xs -> (? (== n 0)
 
 # other functions
 min a b -> (? (< a b) a b);
-range a b -> (? (== a b)
+max a b -> (? (> a b) a b);
+.. a b -> (? (== a b)
   [] (: a (range (+ a 1) b))
 );
