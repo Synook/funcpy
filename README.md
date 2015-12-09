@@ -9,8 +9,6 @@ $ ../funcpy test
 ```
 
 ## To do
-* Includes
-* Comments
 * List comprehension
 * Pattern matching
 * Guards

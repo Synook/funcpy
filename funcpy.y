@@ -14,6 +14,7 @@
   void parse(FILE *, FILE *);
   char *concat(char *, char *);
   char_stack_t *files;
+  expression_t *cons_expr;
 
   void yyerror(const char *s);
 %}
@@ -130,17 +131,15 @@ expression:
   LPAREN func_call RPAREN {
     expression_t *expression = malloc(sizeof(expression_t));
     expression->literal = NULL;
+    expression->id = NULL;
     expression->func_call = $2;
     $$ = expression;
   }
   | ID {
-    func_call_t *func_call = malloc(sizeof(func_call_t));
-    func_call->name = $1;
-    func_call->args = NULL;
-
     expression_t *expression = malloc(sizeof(expression_t));
     expression->literal = NULL;
-    expression->func_call = func_call;
+    expression->func_call = NULL;
+    expression->id = $1;
     $$ = expression;
   }
   | NUMBER {
@@ -150,6 +149,7 @@ expression:
     expression_t *expression = malloc(sizeof(expression_t));
     expression->literal = literal;
     expression->func_call = NULL;
+    expression->id = NULL;
     $$ = expression;
   }
   | STRING {
@@ -159,6 +159,7 @@ expression:
     expression_t *expression = malloc(sizeof(expression_t));
     expression->literal = literal;
     expression->func_call = NULL;
+    expression->id = NULL;
     $$ = expression;
   }
   | LBRACKET list RBRACKET {
@@ -170,8 +171,9 @@ list:
   expression COMMA list {
     expression_t *expression = malloc(sizeof(expression_t));
     expression->literal = NULL;
+    expression->id = NULL;
     expression->func_call = malloc(sizeof(func_call_t));
-    expression->func_call->name = ":";
+    expression->func_call->expression = cons_expr;
     expression->func_call->args = malloc(sizeof(args_t));
     expression->func_call->args->expression = $1;
     expression->func_call->args->args = malloc(sizeof(args_t));
@@ -182,32 +184,33 @@ list:
   | expression {
     expression_t *expression = malloc(sizeof(expression_t));
     expression->literal = NULL;
+    expression->id = NULL;
+
     expression->func_call = malloc(sizeof(func_call_t));
-    expression->func_call->name = ":";
+    expression->func_call->expression = cons_expr;
     expression->func_call->args = malloc(sizeof(args_t));
     expression->func_call->args->expression = $1;
     expression->func_call->args->args = malloc(sizeof(args_t));
+
     expression->func_call->args->args->expression = malloc(sizeof(expression_t));
+    expression->func_call->args->args->expression->id = "emptylist";
     expression->func_call->args->args->expression->literal = NULL;
-    expression->func_call->args->args->expression->func_call = malloc(sizeof(func_call_t));
-    expression->func_call->args->args->expression->func_call->name = "emptylist";
-    expression->func_call->args->args->expression->func_call->args = NULL;
+    expression->func_call->args->args->expression->func_call = NULL;
     expression->func_call->args->args->args = NULL;
     $$ = expression;
   }
   | {
     expression_t *expression = malloc(sizeof(expression_t));
     expression->literal = NULL;
-    expression->func_call = malloc(sizeof(func_call_t));
-    expression->func_call->name = "emptylist";
-    expression->func_call->args = NULL;
+    expression->func_call = NULL;
+    expression->id = "emptylist";
     $$ = expression;
   }
 
 func_call:
-  ID args {
+  expression args {
     func_call_t *func_call = malloc(sizeof(func_call_t));
-    func_call->name = $1;
+    func_call->expression = $1;
     func_call->args = $2;
     $$ = func_call;
   }
@@ -233,7 +236,13 @@ int main(int args, char **argv) {
     exit(-1);
   }
   char *name;
+
   files = stack_new();
+  cons_expr = malloc(sizeof(expression_t));
+  cons_expr->literal = NULL;
+  cons_expr->func_call = NULL;
+  cons_expr->id = ":";
+
   stack_push(files, argv[1]);
   while ((name = stack_pop(files))) {
     printf("%s.fpy -> ", name);

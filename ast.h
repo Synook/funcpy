@@ -40,10 +40,11 @@ struct params_struct {
 struct expression_struct {
   func_call_t *func_call;
   literal_t *literal;
+  char *id;
 };
 
 struct func_call_struct {
-  char *name;
+  expression_t *expression;
   args_t *args;
 };
 

@@ -33,9 +33,9 @@ void genpython(FILE *f, program_t *program) {
 }
 
 void print_expr(FILE *f, expression_t *expr) {
-  if (expr->literal == NULL) {
-    if (expr->func_call->args != NULL) fprintf(f, "(");
-    fprintf(f, "%s", transform_name(expr->func_call->name));
+  if (expr->func_call != NULL) {
+    fprintf(f, "(");
+    print_expr(f, expr->func_call->expression);
     args_t *args = expr->func_call->args;
     while (args != NULL) {
       fprintf(f, "(");
@@ -43,9 +43,11 @@ void print_expr(FILE *f, expression_t *expr) {
       args = args->args;
       fprintf(f, ")");
     }
-    if (expr->func_call->args != NULL) fprintf(f, ")");
-  } else {
+    fprintf(f, ")");
+  } else if (expr->literal != NULL) {
     print_literal(f, expr->literal);
+  } else {
+    fprintf(f, "%s", transform_name(expr->id));
   }
 }
 

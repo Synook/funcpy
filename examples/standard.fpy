@@ -34,6 +34,7 @@ def printr (a, inside = False):
 }}
 
 # basic functions
+. x y v -> (x (y v));
 ! a -> (? a false true);
 != a b -> (! (== a b));
 or a b -> (? a true (? b true false));
@@ -71,7 +72,10 @@ snd xs -> (head (tail xs));
 zip xs ys -> (? (or (== xs []) (== ys []))
   [] (: [(head xs), (head ys)] (zip (tail xs) (tail ys)))
 );
-. x y v -> (x (y v));
+repeat x -> (: x (repeat x));
+take n xs -> (? (== n 0)
+  [] (: (head xs) (take (- n 1) (tail xs)))
+);
 
 # other functions
 min a b -> (? (< a b) a b);
