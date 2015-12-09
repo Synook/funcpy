@@ -4,7 +4,7 @@
 #include <string.h>
 
 void print_expr(FILE *, expression_t *);
-void print_func(FILE *, params_t *, expression_t *);
+void print_func(FILE *, params_t *, expression_t *, int);
 char *transform_name(char *s);
 
 void genpython(FILE *f, program_t *program) {
@@ -14,7 +14,7 @@ void genpython(FILE *f, program_t *program) {
       function_t *function = program->function;
       params_t *params = function->params;
       fprintf(f, "%s = ", transform_name(function->name));
-      print_func(f, function->params, function->expression);
+      print_func(f, function->params, function->expression, 1);
     } else if (program->pythonblock != NULL) {
       fprintf(f, "%s", program->pythonblock->python);
     } else {
@@ -26,15 +26,17 @@ void genpython(FILE *f, program_t *program) {
   fprintf(f, "if __name__ == '__main__': fpy_main()\n");
 }
 
-void print_func(FILE *f, params_t *params, expression_t *expression) {
-  int dummy_lambda = params != NULL;
+void print_func(FILE *f, params_t *params, expression_t *expression, int pad) {
+  int dummy_lambda = params != NULL && pad;
   while (params != NULL) {
-    fprintf(f, "lambda %s: ", transform_name(params->name));
+    fprintf(f, "lambda: lambda %s: ", transform_name(params->name));
     params = params->params;
   }
-  if (dummy_lambda) fprintf(f, "lambda: ");
+  if (dummy_lambda) fprintf(f, "lambda: (");
+  //if (dummy_lambda) fprintf(f, "lambda: (");
   print_expr(f, expression);
-  if (dummy_lambda) fprintf(f, "()");
+  if (dummy_lambda) fprintf(f, ")()");
+  //if (dummy_lambda) fprintf(f, ")()");
 }
 
 void print_expr(FILE *f, expression_t *expr) {
@@ -43,15 +45,16 @@ void print_expr(FILE *f, expression_t *expr) {
     print_expr(f, expr->func_call->expression);
     args_t *args = expr->func_call->args;
     while (args != NULL) {
-      fprintf(f, "(");
+      fprintf(f, "()(");
       print_expr(f, args->expression);
       args = args->args;
       fprintf(f, ")");
+      // if (args != NULL) fprintf(f, "()");
     }
     fprintf(f, ")");
   } else if (expr->lambda != NULL) {
     fprintf(f, "(");
-    print_func(f, expr->lambda->params, expr->lambda->expression);
+    print_func(f, expr->lambda->params, expr->lambda->expression, 0);
     fprintf(f, ")");
   } else if (expr->literal != NULL) {
     fprintf(f, "lit(%s)", expr->literal);
