@@ -10,10 +10,12 @@ $ ../funcpy test
 
 A very short guide to the language:
 ```
-times a b -> (* a b); # note req. params and prefix notation
+times a b -> (* a b); # required parens and prefix notation
 largerThanOne -> (filter (< 1)); # argument omission
 timesListByTwo -> (map (\x -> (* x 2))); # lambdas
 ```
+
+View `fpy/standard.fpy` for more code and the standard library.
 
 ## To do
 * List comprehension (not really necessary)
