@@ -13,6 +13,7 @@ A very short guide to the language:
 times a b -> (* a b); # required parens and prefix notation
 largerThanOne -> (filter (< 1)); # argument omission
 timesListByTwo -> (map (\x -> (* x 2))); # lambdas
+main -> (dirty_print (timesListByTwo [1,2])); # dirty_print, the only IO for now
 ```
 
 View `fpy/standard.fpy` for more code and the standard library.

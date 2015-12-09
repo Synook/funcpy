@@ -4,3 +4,4 @@ funcpy.tab.*
 lex.yy.*
 *.pyc
 *.py
+.DS_Store

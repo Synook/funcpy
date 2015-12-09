@@ -5,5 +5,6 @@ doubleSmallNumber x -> (? (> x 100) x (* x 2));
 
 main -> (dirty_print [
   (filter (\x -> (> x 1)) [1,2,3,4]),
-  (\ -> 1)
+  (\ -> 1),
+  (!! [1,2,3,4] 2)
 ]);
