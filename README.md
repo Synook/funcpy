@@ -40,7 +40,7 @@ This defines a simple function, `frepeat`, which generates an infinitely long li
 
 The above line will be compiled by funcpy into the following Python code (newlines added for clarity):
 
-```
+```python
 from standard import * # include standard;
 fpy_frepeat = lambda: lambda fpy_f: lambda: lambda fpy_v: lambda: (
   (sym_5800()(fpy_v)()(
@@ -99,7 +99,7 @@ head(frepeat(lambda a: a + 1)(0))() # will result in the evaluation of v, but no
 This causes another problem, however: if we want to partially apply a function, then the `lambda:` at the end becomes an issue. Consider what happens if we define another function, `increaseFrom`, to be `frepeat(lambda a)`. In this case we should be able to partially apply it like below, since frepeat(f) is a function in itself. However, since the compiler doesn't know the arity (number of arguments) for `frepeat`, it will automatically put `()` at the end so the function is evaluated.
 
 ```python
-increaseFrom = lambda: (frepeat(lambda a: a + 1))()
+increaseFrom = lambda: frepeat(lambda a: a + 1)()
 ```
 
 This would be incorrect! `frepeat(f)` is supposed to take one argument, and so this will cause a runtime error.
@@ -127,5 +127,8 @@ frepeat = lambda: lambda f: lambda: lambda v: lambda: (cons(v, frepeat(f)(v)))()
 Then, when we want to call `frepeat`, we can simply place `()` before each argument, and the result even after applying all arguments, will still be a function in itself. Responsibility for calling the final `()`, then, is devolved to the body of the calling function, just like before.
 
 ```python
+increaseFrom = lambda: frepeat()(lambda a: a + 1)() # good
+actually_frepeat = lambda: frepeat() # also good (because the extra lambda re-applies the arity-0 function we evaluate)
+actually_frepeat = frepeat # also good!
 head()(frepeat()(lambda a: a + 1)()(0))()
 ```
