@@ -33,10 +33,8 @@ void print_func(FILE *f, params_t *params, expression_t *expression, int pad) {
     params = params->params;
   }
   if (dummy_lambda) fprintf(f, "lambda: (");
-  //if (dummy_lambda) fprintf(f, "lambda: (");
   print_expr(f, expression);
   if (dummy_lambda) fprintf(f, ")()");
-  //if (dummy_lambda) fprintf(f, ")()");
 }
 
 void print_expr(FILE *f, expression_t *expr) {
@@ -49,7 +47,6 @@ void print_expr(FILE *f, expression_t *expr) {
       print_expr(f, args->expression);
       args = args->args;
       fprintf(f, ")");
-      // if (args != NULL) fprintf(f, "()");
     }
     fprintf(f, ")");
   } else if (expr->lambda != NULL) {

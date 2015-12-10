@@ -39,6 +39,7 @@ zip xs ys -> (? (or (== xs []) (== ys []))
   [] (: [(head xs), (head ys)] (zip (tail xs) (tail ys)))
 );
 repeat x -> (: x (repeat x));
+frepeat f v -> (: v (frepeat f (f v)));
 take n xs -> (? (== n 0)
   [] (: (head xs) (take (- n 1) (tail xs)))
 );
