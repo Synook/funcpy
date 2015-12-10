@@ -59,10 +59,10 @@ As is evident, `frepeat` simply becomes a sequence of lambda functions represent
 
 ### Why so many lambdas?
 
-One thing that may seem odd about the translation is the amount of lambdas generated: five in total for two actual arguments.
+One thing that may seem odd about the translation is the amount of lambdas generated: five in total for two actual arguments in the definition of `fpy_repeat`.
 
-```
-lambda: lambda fpy_f: lambda: lambda fpy_v: lambda:
+```python
+fpy_repeat = lambda: lambda fpy_f: lambda: lambda fpy_v: lambda: ...
 ```
 
 There is a good reason for this, however. Consider how we might represent this function if writing directly in Python. An immediately obvious approach may be to define it as a single function, with two arguments (assume here `cons` is equivalent to the `:` function):
@@ -121,14 +121,14 @@ actually_frepeat = lambda: frepeat()
 This would still be incorrect in the `frepeat` case, because the first lambda for the function still takes one argument. Therefore, a lambda is also needed before the first actual argument:
 
 ```python
-frepeat = lambda: lambda f: lambda: lambda v: lambda: (cons(v, frepeat(f)(v)))()
+frepeat = lambda: lambda f: lambda: lambda v: lambda: (cons(v, frepeat()(f)()(v)))()
 ```
 
-Then, when we want to call `frepeat`, we can simply place `()` before each argument, and the result even after applying all arguments, will still be a function in itself. Responsibility for calling the final `()`, then, is devolved to the body of the calling function, just like before.
+Then, when we want to call `frepeat`, we can simply place `()` before each argument, and the result even after applying all arguments, will still be a function in itself. Responsibility for calling the final `()`, then, is devolved to the body of the calling function (e.g. `cons`), just like before.
 
 ```python
 increaseFrom = lambda: frepeat()(lambda a: a + 1)() # good
 actually_frepeat = lambda: frepeat() # also good (the lambda re-applies the arity-0 function)
-actually_frepeat = frepeat # also good (this optimisation is made by the compiler for 0-arity aliases)
+actually_frepeat1 = frepeat # also good (this optimisation is made by the compiler for 0-arity aliases)
 head()(frepeat()(lambda a: a + 1)()(0))()
 ```
