@@ -38,6 +38,7 @@ last -> (foldr1 (flip const));
 zip xs ys -> (? (or (== xs []) (== ys []))
   [] (: [(head xs), (head ys)] (zip (tail xs) (tail ys)))
 );
+zipWith f xs ys -> (map (\x -> (f (fst x) (snd x))) (zip xs ys));
 repeat x -> (: x (repeat x));
 frepeat f v -> (: v (frepeat f (f v)));
 take n xs -> (? (== n 0)
@@ -49,5 +50,5 @@ take n xs -> (? (== n 0)
 min a b -> (? (< a b) a b);
 max a b -> (? (> a b) a b);
 .. a b -> (? (== a b)
-  [] (: a (range (+ a 1) b))
+  [] (: a (.. (+ a 1) b))
 );
