@@ -107,7 +107,7 @@ This would be incorrect! `frepeat(f)` is supposed to take one argument, and so t
 One possible way to get around this would be to insert an extra lambda after *every* argument, to get for example:
 
 ```python
-frepeat = lambda f: lambda: lambda v: lambda: (cons(v, frepeat(f)(v)))()
+frepeat = lambda f: lambda: lambda v: lambda: (cons(v, frepeat(f)()(v)))()
 ```
 
 This would solve the problem described earlier, since we can freely place `()` after every argument given when `frepeat` is called.
