@@ -128,7 +128,7 @@ Then, when we want to call `frepeat`, we can simply place `()` before each argum
 
 ```python
 increaseFrom = lambda: frepeat()(lambda a: a + 1)() # good
-actually_frepeat = lambda: frepeat() # also good (because the extra lambda re-applies the arity-0 function we evaluate)
-actually_frepeat = frepeat # also good!
+actually_frepeat = lambda: frepeat() # also good (the lambda re-applies the arity-0 function)
+actually_frepeat = frepeat # also good (this optimisation is made by the compiler for 0-arity aliases)
 head()(frepeat()(lambda a: a + 1)()(0))()
 ```
