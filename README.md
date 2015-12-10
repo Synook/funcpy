@@ -59,23 +59,23 @@ As is evident, `frepeat` simply becomes a sequence of lambda functions represent
 
 ### Why so many lambdas?
 
-One thing that may seem odd about the translation is the amount of lambdas generated: five in total for two actual arguments in the definition of `fpy_repeat`.
+One thing that may seem odd about the translation is the amount of lambdas generated: five in total for two actual arguments in the definition of `fpy_frepeat`.
 
 ```python
-fpy_repeat = lambda: lambda fpy_f: lambda: lambda fpy_v: lambda: ...
+fpy_frepeat = lambda: lambda fpy_f: lambda: lambda fpy_v: lambda: ...
 ```
 
 There is a good reason for this, however. Consider how we might represent this function if writing directly in Python. An immediately obvious approach may be to define it as a single function, with two arguments (assume here `cons` is equivalent to the `:` function):
 
 ```python
-frepeat = lambda f, v: cons(v, frepeat(f, v))
+frepeat = lambda f, v: cons(v, frepeat(f, f(v)))
 frepeat(lambda a: a + 1, 0)
 ```
 
 There are a few problems with this. Most obvious is that this function is not *curried*, and does not support partial application. This can be easily fixed:
 
 ```python
-frepeat = lambda f: lambda v: cons(v, frepeat(f)(v))
+frepeat = lambda f: lambda v: cons(v)(frepeat(f)(f(v)))
 frepeat(lambda a: a + 1)(0)
 ```
 
@@ -84,8 +84,8 @@ The second problem, however, is more insidious. `frepeat` in theory generates an
 Some method, therefore, of continuing to defer evaluation of the function itself is necessary. This would allow for `frepeat` to reference itself, without evaluating itself immediately. A simple way to achieve this would be to insert an additional lambda at the end, as such:
 
 ```python
-frepeat = lambda f: lambda v: lambda: (cons(v, frepeat(f)(v)))()
-frepeat(lambda a: a + 1)(0)
+frepeat = lambda f: lambda v: lambda: (cons(v)(frepeat(f)(f(v)))()
+frepeat(lambda a: lambda: a + 1)(0)()
 ```
 
 It then becomes the responsibility of the function calling `frepeat` to make the final function call and evaluate the expression. If the function does not need further elements in the list, then it can stop evaluation without recursing infinitely. In fact, `frepeat(lambda a: a + 1)(0)` would not result in any actual evaluation, since it returns a function in itself. Only when that is called finally will the result be computed:
@@ -93,13 +93,14 @@ It then becomes the responsibility of the function calling `frepeat` to make the
 ```python
 cons = lambda x: lambda xs: lambda: (x, xs)
 head = lambda xs: lambda: xs()[0]()
-head(frepeat(lambda a: a + 1)(0))() # will result in the evaluation of v, but not even f(v)
+head(frepeat(lambda a: lambda: a + 1)(0))() # will result in the evaluation of v, but not even f(v)
 ```
 
 This causes another problem, however: if we want to partially apply a function, then the `lambda:` at the end becomes an issue. Consider what happens if we define another function, `increaseFrom`, to be `frepeat(lambda a)`. In this case we should be able to partially apply it like below, since frepeat(f) is a function in itself. However, since the compiler doesn't know the arity (number of arguments) for `frepeat`, it will automatically put `()` at the end so the function is evaluated.
 
 ```python
-increaseFrom = lambda: frepeat(lambda a: a + 1)()
+f = lambda a: lambda: a + 1
+increaseFrom = lambda: frepeat(f)()
 ```
 
 This would be incorrect! `frepeat(f)` is supposed to take one argument, and so this will cause a runtime error.
@@ -107,7 +108,7 @@ This would be incorrect! `frepeat(f)` is supposed to take one argument, and so t
 One possible way to get around this would be to insert an extra lambda after *every* argument, to get for example:
 
 ```python
-frepeat = lambda f: lambda: lambda v: lambda: (cons(v, frepeat(f)()(v)))()
+frepeat = lambda f: lambda: lambda v: lambda: (cons(v)()(frepeat(f)()(f(v))))()
 ```
 
 This would solve the problem described earlier, since we can freely place `()` after every argument given when `frepeat` is called.
@@ -121,7 +122,7 @@ actually_frepeat = lambda: frepeat()
 This would still be incorrect in the `frepeat` case, because the first lambda for the function still takes one argument. Therefore, a lambda is also needed before the first actual argument:
 
 ```python
-frepeat = lambda: lambda f: lambda: lambda v: lambda: (cons(v, frepeat()(f)()(v)))()
+frepeat = lambda: lambda f: lambda: lambda v: lambda: (cons()(v)()( frepeat()(f)()(f()(v))))()
 ```
 
 Then, when we want to call `frepeat`, we can simply place `()` before each argument, and the result even after applying all arguments, will still be a function in itself. Responsibility for calling the final `()`, then, is devolved to the body of the calling function (e.g. `cons`), just like before.
@@ -130,5 +131,5 @@ Then, when we want to call `frepeat`, we can simply place `()` before each argum
 increaseFrom = lambda: frepeat()(lambda a: a + 1)() # good
 actually_frepeat = lambda: frepeat() # also good (the lambda re-applies the arity-0 function)
 actually_frepeat1 = frepeat # also good (this optimisation is made by the compiler for 0-arity aliases)
-head()(frepeat()(lambda a: a + 1)()(0))()
+head()(frepeat()(lambda: lambda a: lambda: a + 1)()(0))()
 ```
