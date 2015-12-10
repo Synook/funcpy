@@ -128,8 +128,9 @@ frepeat = lambda: lambda f: lambda: lambda v: lambda: (cons()(v)()( frepeat()(f)
 Then, when we want to call `frepeat`, we can simply place `()` before each argument, and the result even after applying all arguments, will still be a function in itself. Responsibility for calling the final `()`, then, is devolved to the body of the calling function (e.g. `cons`), just like before.
 
 ```python
-increaseFrom = lambda: frepeat()(lambda a: a + 1)() # good
+naturalNumbers = lambda: frepeat()(lambda: lambda a: lambda: a + 1)()(0)() # good
+increaseFrom = lambda: frepeat()(lambda: lambda a: lambda: a + 1)() # also good
 actually_frepeat = lambda: frepeat() # also good (the lambda re-applies the arity-0 function)
 actually_frepeat1 = frepeat # also good (this optimisation is made by the compiler for 0-arity aliases)
-head()(frepeat()(lambda: lambda a: lambda: a + 1)()(0))()
+main = head()(frepeat()(lambda: lambda a: lambda: a + 1)()(0))()
 ```
