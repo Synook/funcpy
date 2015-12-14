@@ -17,8 +17,28 @@ void genpython(FILE *f, program_t *program) {
       print_func(f, function->params, function->expression, 1);
     } else if (program->pythonblock != NULL) {
       fprintf(f, "%s", program->pythonblock->python);
-    } else {
+    } else if (program->include != NULL) {
       fprintf(f, "from %s import *", program->include->filename);
+    } else if (program->define != NULL) {
+      fprintf(f, "class %s(Type): pass\n", program->define->type);
+      define_args_t *args = program->define->define_args;
+      while (args != NULL) {
+        define_arg_params_t *first_arg_param = args->arg_params;
+        define_arg_params_t *arg_param = args->arg_params;
+        fprintf(f, "fpy_%s = ", args->id);
+        while (arg_param != NULL) {
+          fprintf(f, "lambda: lambda %s: ", arg_param->id);
+          arg_param = arg_param->arg_params;
+        }
+        fprintf(f, "lambda: %s('%s'", program->define->type, args->id);
+        arg_param = first_arg_param;
+        while (arg_param != NULL) {
+          fprintf(f, ", %s=%s", arg_param->id, arg_param->id);
+          arg_param = arg_param->arg_params;
+        }
+        fprintf(f, ")\n");
+        args = args->define_args;
+      }
     }
     fprintf(f, "\n");
 

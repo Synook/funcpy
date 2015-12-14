@@ -16,4 +16,4 @@ timesListByTwo -> (map (\x -> (* x 2))); # lambdas
 main -> (dirty_print (timesListByTwo [1,2])); # dirty_print, the only IO for now
 ```
 
-View `fpy/standard.fpy` for more code and the standard library.
+View `fpy/standard.fpy` for more code and the standard library, or the [wiki](https://github.com/Synook/funcpy/wiki) for more information.

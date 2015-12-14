@@ -11,5 +11,6 @@ main -> (dirty_print [
   (\ -> 1),
   (!! [1,2,3,4] 2),
   (take 5 (repeat 1)),
-  ((. (* 2) (+ 5)) 5)
+  ((. (* 2) (+ 5)) 5),
+  (? (isa (Just 5) "Just") (get (Just 5) "value") false)
 ]);

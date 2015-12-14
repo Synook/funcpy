@@ -10,12 +10,32 @@ typedef struct func_call_struct func_call_t;
 typedef struct args_struct args_t;
 typedef struct pythonblock_struct pythonblock_t;
 typedef struct lambda_struct lambda_t;
+typedef struct define_struct define_t;
+typedef struct define_args_struct define_args_t;
+typedef struct define_arg_params_struct define_arg_params_t;
 
 struct program_struct {
   function_t *function;
   include_t *include;
   pythonblock_t *pythonblock;
+  define_t *define;
   program_t *program;
+};
+
+struct define_struct {
+  char *type;
+  define_args_t *define_args;
+};
+
+struct define_args_struct {
+  char *id;
+  define_arg_params_t *arg_params;
+  define_args_t *define_args;
+};
+
+struct define_arg_params_struct {
+  char *id;
+  define_arg_params_t *arg_params;
 };
 
 struct pythonblock_struct {

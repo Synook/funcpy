@@ -29,6 +29,9 @@
   func_call_t *func_call;
   args_t *args;
   include_t* include;
+  define_t *define;
+  define_args_t *define_args;
+  define_arg_params_t *define_arg_params;
 }
 
 %token ALIAS
@@ -40,6 +43,8 @@
 %token INCLUDE;
 %token COMMA;
 %token LAMBDA;
+%token DEFINE;
+%token MEMBER;
 
 %token <id> NUMBER;
 %token <id> ID;
@@ -54,6 +59,9 @@
 %type <args> args;
 %type <expression> list;
 %type <include> include;
+%type <define> define;
+%type <define_args> define_args;
+%type <define_arg_params> define_arg_params;
 
 %%
 
@@ -65,26 +73,30 @@ funcpy:
 
 program:
   include program {
-    program_t *f = malloc(sizeof(program_t));
+    program_t *f;
+    STRUCT_NEW(f, program_t);
     f->include = $1;
-    f->function = NULL;
-    f->pythonblock = NULL;
     f->program = $2;
     $$ = f;
   }
+  | define program {
+    program_t *program;
+    STRUCT_NEW(program, program_t);
+    program->define = $1;
+    program->program = $2;
+    $$ = program;
+  }
   |
   function program {
-    program_t *f = malloc(sizeof(program_t));
+    program_t *f;
+    STRUCT_NEW(f, program_t);
     f->function = $1;
-    f->include = NULL;
-    f->pythonblock = NULL;
     f->program = $2;
     $$ = f;
   }
   | PYTHONBLOCK program {
-    program_t *f = malloc(sizeof(program_t));
-    f->function = NULL;
-    f->include = NULL;
+    program_t *f;
+    STRUCT_NEW(f, program_t);
     f->pythonblock = malloc(sizeof(pythonblock_t));
     f->pythonblock->python = $1;
     f->program = $2;
@@ -102,6 +114,50 @@ include:
     include->filename = name;
     stack_push(files, name);
     $$ = include;
+  }
+  ;
+
+define:
+  ID DEFINE define_args SEMICOLON {
+    define_t *define;
+    STRUCT_NEW(define, define_t);
+    define->type = $1;
+    define->define_args = $3;
+    $$ = define;
+  }
+  ;
+
+define_args:
+  ID define_args {
+    define_args_t *define_args;
+    STRUCT_NEW(define_args, define_args_t);
+    define_args->id = $1;
+    define_args->define_args = $2;
+    $$ = define_args;
+  }
+  | LPAREN ID define_arg_params RPAREN define_args {
+    define_args_t *define_args;
+    STRUCT_NEW(define_args, define_args_t);
+    define_args->id = $2;
+    define_args->arg_params = $3;
+    define_args->define_args = $5;
+    $$ = define_args;
+  }
+  | {
+    $$ = NULL;
+  }
+  ;
+
+define_arg_params:
+  ID define_arg_params {
+    define_arg_params_t *arg_params;
+    STRUCT_NEW(arg_params, define_arg_params_t);
+    arg_params->id = $1;
+    arg_params->arg_params = $2;
+    $$ = arg_params;
+  }
+  | {
+    $$ = NULL;
   }
   ;
 

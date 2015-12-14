@@ -10,6 +10,7 @@
 %%
 
 "->" { return ALIAS; }
+"=>" { return DEFINE; }
 ";" { return SEMICOLON; }
 "(" { return LPAREN; }
 ")" { return RPAREN; }

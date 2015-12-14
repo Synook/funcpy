@@ -1,5 +1,6 @@
 # funcpy Python primitives. Because operators don't come from nowhere.
 # Used by standard.fpy.
+# Can possibly be improved with a currying decorator.
 
 {{
 import inspect
@@ -31,4 +32,18 @@ def printr (a, inside = False):
     lstr = "%s:%s" % (printr(a()[0],True),printr(a()[1]))
     return "(%s)" % lstr if inside else lstr
   else: return a ()
+
+# algebraic Types
+
+class Type(object):
+  def __init__(self, option, **values):
+    self.option = option
+    self.values = values
+  def isa(self, option):
+    print(self.option, option())
+    return lambda: self.option == option()
+  def value(self, n):
+    return lambda: self.values[n()]()
+fpy_isa = lambda: lambda type: lambda: lambda option: lambda: type().isa(option)()
+fpy_get = lambda: lambda type: lambda: lambda value: lambda: type().value(value)()
 }}

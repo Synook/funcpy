@@ -52,3 +52,6 @@ max a b -> (? (> a b) a b);
 .. a b -> (? (== a b)
   [] (: a (.. (+ a 1) b))
 );
+
+# types
+Maybe => (Just value) Nothing;
