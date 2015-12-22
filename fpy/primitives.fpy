@@ -40,6 +40,12 @@ class Type(object):
     for (arg, v) in self.values.items():
       repr += " " + arg + "=" + v().__str__()
     return repr + ")"
+  def __eq__(self, other):
+    if self.option != other.option: return False
+    for (k, v) in self.values.items():
+      if k not in other.values or v() != other.values[k](): return False
+    return True
+
 fpy_isa = lambda: lambda t: lambda: lambda option: lambda: t().isa(option)()
 fpy_get = lambda: lambda t: lambda: lambda value: lambda: t().value(value)()
 fpy_type = lambda: lambda t: lambda: lambda option: lambda: "type" in dir(t()) and t().type(option)()

@@ -30,7 +30,9 @@ numsTree -> (foldr treeInsert EmptyTree nums);
 main -> (dirty_print [
   (fmap (* 2) (Just 3)),
   (fmap (* 2) Nothing),
-  (fmap (* 2) [1,2,3])
+  (fmap (* 2) [1,2,3]),
+  (== Nothing Nothing),
+  (== (Just 1) (Just 2))
 ]);
 main1 -> (dirty_print [
   (zipWith + [1,2,3] [4,5,6]),
