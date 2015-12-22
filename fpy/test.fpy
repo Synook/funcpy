@@ -3,7 +3,36 @@ include standard;
 doubleUs x y -> (+ (* x 2) (* y 2));
 doubleSmallNumber x -> (? (> x 100) x (* x 2));
 
+tree => EmptyTree (Node value left right);
+leaf v -> (Node v EmptyTree EmptyTree);
+treeInsert v tree -> (? (isa tree "EmptyTree") (leaf v)
+  (? (== v (get tree "value")) tree
+    (? (< v (get tree "value"))
+      (Node
+        v (treeInsert (get tree "value") (get tree "left")) (get tree "right")
+      )
+      (Node
+        v (get tree "left") (treeInsert (get tree "value") (get tree "right"))
+      )
+    )
+  )
+);
+treeElem v tree -> (? (isa tree "EmptyTree") false
+  (? (== v (get tree "value")) true
+    (? (< v (get tree "value"))
+      (treeElem v (get tree "left"))
+      (treeElem v (get tree "right"))
+    )
+  )
+);
+nums -> [8,6,4,1,7,3,5];
+numsTree -> (foldr treeInsert EmptyTree nums);
 main -> (dirty_print [
+  (fmap (* 2) (Just 3)),
+  (fmap (* 2) Nothing),
+  (fmap (* 2) [1,2,3])
+]);
+main1 -> (dirty_print [
   (zipWith + [1,2,3] [4,5,6]),
   (filter (\x -> (> x 1)) [1,2,3,4]),
   (map (+ 1) [1,2,3]),

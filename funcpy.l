@@ -21,6 +21,7 @@
 "\\" {
   return LAMBDA;
 }
+"~" { return MEMBER; }
 
 "{{"([}]?[^}])*"}}" {
   yylval.id = strdup(yytext) + 2;

@@ -22,9 +22,32 @@ fpy_tail = lambda: lambda xs: lambda: xs()[1]()
 fpy_false = lambda: False
 fpy_true = lambda: True
 
-def fpy_dirty_print():
-  return fpy_dirty_print1
-def fpy_dirty_print1 (a):
+# algebraic Types
+
+class Type(object):
+  def __init__(self, option, **values):
+    self.option = option
+    self.values = values
+  def isa(self, option):
+    # print(self, option(), self.option == option())
+    return lambda: self.option == option()
+  def type(self, option):
+    return lambda: self.__class__.__name__ == option()
+  def value(self, n):
+    return lambda: self.values[n()]()
+  def __str__(self):
+    repr = "(" + self.option
+    for (arg, v) in self.values.items():
+      repr += " " + arg + "=" + v().__str__()
+    return repr + ")"
+fpy_isa = lambda: lambda t: lambda: lambda option: lambda: t().isa(option)()
+fpy_get = lambda: lambda t: lambda: lambda value: lambda: t().value(value)()
+fpy_type = lambda: lambda t: lambda: lambda option: lambda: "type" in dir(t()) and t().type(option)()
+
+# dirty print
+
+fpy_dirty_print = lambda: lambda a: lambda: dirty_print(a)()
+def dirty_print (a):
   print(printr(a))
   return a
 def printr (a, inside = False):
@@ -33,17 +56,4 @@ def printr (a, inside = False):
     return "(%s)" % lstr if inside else lstr
   else: return a ()
 
-# algebraic Types
-
-class Type(object):
-  def __init__(self, option, **values):
-    self.option = option
-    self.values = values
-  def isa(self, option):
-    print(self.option, option())
-    return lambda: self.option == option()
-  def value(self, n):
-    return lambda: self.values[n()]()
-fpy_isa = lambda: lambda type: lambda: lambda option: lambda: type().isa(option)()
-fpy_get = lambda: lambda type: lambda: lambda value: lambda: type().value(value)()
 }}

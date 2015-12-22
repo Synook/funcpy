@@ -6,6 +6,8 @@
 void print_expr(FILE *, expression_t *);
 void print_func(FILE *, params_t *, expression_t *, int);
 char *transform_name(char *s);
+void transform_case(function_t *function);
+int is_case(function_t *function);
 
 void genpython(FILE *f, program_t *program) {
   //fprintf(f, "from primitives import *\n");
@@ -13,8 +15,17 @@ void genpython(FILE *f, program_t *program) {
     if (program->function != NULL) {
       function_t *function = program->function;
       params_t *params = function->params;
-      fprintf(f, "%s = ", transform_name(function->name));
+      char *py_name = transform_name(function->name);
+      fprintf(f, "%s = ", py_name);
+      int do_case = is_case(function);
+      if (do_case) {
+        transform_case(function);
+        fprintf(f, "(lambda %s: ", py_name);
+      }
       print_func(f, function->params, function->expression, 1);
+      if (do_case) {
+        fprintf(f, ")(%s)", py_name);
+      }
     } else if (program->pythonblock != NULL) {
       fprintf(f, "%s", program->pythonblock->python);
     } else if (program->include != NULL) {
@@ -78,6 +89,43 @@ void print_expr(FILE *f, expression_t *expr) {
   } else {
     fprintf(f, "%s", transform_name(expr->id));
   }
+}
+
+void transform_case(function_t *function) {
+  expression_t *expression = function->expression;
+  expression->func_call->expression->id = "?";
+  args_t *false_arg;
+  STRUCT_NEW(false_arg, args_t);
+  STRUCT_NEW(false_arg->expression, expression_t);
+  STRUCT_NEW(false_arg->expression->func_call, func_call_t);
+  STRUCT_NEW(false_arg->expression->func_call->expression, expression_t);
+  false_arg->expression->func_call->expression->id = function->name;
+  params_t *params = function->params;
+  args_t *current = NULL;
+  while (params != NULL) {
+    args_t *new_arg;
+    STRUCT_NEW(new_arg, args_t);
+    STRUCT_NEW(new_arg->expression, expression_t);
+    new_arg->expression->id = params->name;
+    if (current == NULL) {
+      false_arg->expression->func_call->args = new_arg;
+    } else {
+      current->args = new_arg;
+    }
+    current = new_arg;
+    params = params->params;
+  }
+  expression->func_call->args->args->args = false_arg;
+}
+
+int is_case(function_t *function) {
+  expression_t *expression;
+  return (
+    (expression = function->expression) != NULL &&
+    expression->func_call != NULL &&
+    expression->func_call->expression->id != NULL &&
+    !strcmp(expression->func_call->expression->id, "case")
+  );
 }
 
 char *transform_name(char *s) {

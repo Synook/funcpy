@@ -17,13 +17,15 @@ id a -> a;
 const a b -> a;
 
 # list functions
-foldr f v xs -> (? (== xs [])
+
+empty xs -> (== xs []);
+foldr f v xs -> (? (empty xs)
   v (f (head xs) (foldr f v (tail xs)))
 );
-foldr1 f xs -> (? (== (tail xs) [])
+foldr1 f xs -> (? (empty (tail xs))
   (head xs) (f (head xs) (foldr1 f (tail xs)))
 );
-foldl f v xs -> (? (== xs [])
+foldl f v xs -> (? (empty xs)
   v (foldl f (f v (head xs)) (tail xs))
 );
 foldl1 f xs -> (foldl f (head xs) (tail xs));
@@ -35,7 +37,7 @@ filter f -> (foldr (\x acc -> (? (f x) (: x acc) acc)) []);
 fst -> head;
 snd -> (. head tail);
 last -> (foldr1 (flip const));
-zip xs ys -> (? (or (== xs []) (== ys []))
+zip xs ys -> (? (or (empty xs) (empty ys))
   [] (: [(head xs), (head ys)] (zip (tail xs) (tail ys)))
 );
 zipWith f xs ys -> (map (\x -> (f (fst x) (snd x))) (zip xs ys));
@@ -45,6 +47,10 @@ take n xs -> (? (== n 0)
   [] (: (head xs) (take (- n 1) (tail xs)))
 );
 !! xs n -> (? (== n 0) (head xs) (!! (tail xs) (- n 1)));
+elem v xs -> (? (empty xs)
+  false (? (== v (head xs)) true (elem v (tail xs)))
+);
+fmap -> map;
 
 # other functions
 min a b -> (? (< a b) a b);
@@ -55,3 +61,6 @@ max a b -> (? (> a b) a b);
 
 # types
 Maybe => (Just value) Nothing;
+fmap f v -> (case (type v "Maybe")
+  (? (isa v "Just") (Just (f (get v "value"))) Nothing)
+);
