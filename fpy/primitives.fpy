@@ -2,9 +2,7 @@
 # Used by standard.fpy.
 # Can possibly be improved with a currying decorator.
 
-{{
-import inspect
-
+{{ # basic functions
 lit = lambda n: lambda: n # literal function
 sym_4200 = fpy_multiply = lambda: lambda a: lambda: lambda b: lambda: a () * b ()
 sym_4500 = fpy_minus = lambda: lambda a: lambda: lambda b: lambda: a () - b ()
@@ -12,18 +10,15 @@ sym_4300 = fpy_plus = lambda: lambda a: lambda: lambda b: lambda: a () + b ()
 sym_4700 = fpy_div = lambda: lambda a: lambda: lambda b: lambda: a () / b ()
 sym_6200 = fpy_gt = lambda: lambda a: lambda: lambda b: lambda: a () > b ()
 sym_6161 = fpy_eq = lambda: lambda a: lambda: lambda b: lambda: a () == b ()
-sym_6300 = fpy_choice = lambda: lambda cond: lambda: lambda t: lambda: lambda f: lambda: (
-    t () if cond () else f ()
-) # ?
-fpy_emptylist = lambda: [] # i.e., [] in haskell
-sym_5800 = fpy_cons = lambda: lambda x: lambda: lambda xs: lambda: (x, xs) # :
-fpy_head = lambda: lambda xs: lambda: xs()[0]()
-fpy_tail = lambda: lambda xs: lambda: xs()[1]()
+sym_6300 = fpy_choice = lambda: lambda cond: lambda: lambda t: lambda: lambda f: lambda: t() if cond() else f()
+}}
+
+{{ # booleans
 fpy_false = lambda: False
 fpy_true = lambda: True
+}}
 
-# algebraic Types
-
+{{ # algebraic Types
 class Type(object):
   def __init__(self, option, **values):
     self.option = option
@@ -36,30 +31,46 @@ class Type(object):
   def value(self, n):
     return lambda: self.values[n()]()
   def __str__(self):
-    repr = "(" + self.option
+    repr = ""
+    has_keys = self.values.keys()
+    if has_keys: repr += "("
+    repr += self.option
     for (arg, v) in self.values.items():
       repr += " " + arg + "=" + v().__str__()
-    return repr + ")"
+    if has_keys: repr += ")"
+    return repr
   def __eq__(self, other):
     if self.option != other.option: return False
     for (k, v) in self.values.items():
       if k not in other.values or v() != other.values[k](): return False
     return True
-
 fpy_isa = lambda: lambda t: lambda: lambda option: lambda: t().isa(option)()
 fpy_get = lambda: lambda t: lambda: lambda value: lambda: t().value(value)()
 fpy_type = lambda: lambda t: lambda: lambda option: lambda: "type" in dir(t()) and t().type(option)()
+}}
 
-# dirty print
+# lists (dirty_print needs to know)
+List => (: head tail) [];
+head xs -> (get xs "head");
+tail xs -> (get xs "tail");
 
+{{ # dirty print
 fpy_dirty_print = lambda: lambda a: lambda: dirty_print(a)()
 def dirty_print (a):
-  print(printr(a))
+  print(printr(a()))
   return a
 def printr (a, inside = False):
-  if type(a ()) is tuple:
-    lstr = "%s:%s" % (printr(a()[0],True),printr(a()[1]))
+  if type(a) == List and a.isa(lambda: ":")():
+    lstr = "%s:%s" % (printr(a.value(lambda: "head")(),True),printr(a.value(lambda: "tail")()))
     return "(%s)" % lstr if inside else lstr
-  else: return a ()
-
+  else: return a
 }}
+
+{{ # errors
+def throw_exception(msg):
+  raise Exception(msg)
+fpy_error = lambda: lambda msg: lambda: throw_exception(msg())
+}}
+
+# will not be necessary later
+fmap f v -> (error "not implemented for type");

@@ -17,7 +17,6 @@ id a -> a;
 const a b -> a;
 
 # list functions
-
 empty xs -> (== xs []);
 foldr f v xs -> (? (empty xs)
   v (f (head xs) (foldr f v (tail xs)))
@@ -50,7 +49,7 @@ take n xs -> (? (== n 0)
 elem v xs -> (? (empty xs)
   false (? (== v (head xs)) true (elem v (tail xs)))
 );
-fmap -> map;
+fmap f v -> (case (type v "List") (map f v));
 
 # other functions
 min a b -> (? (< a b) a b);

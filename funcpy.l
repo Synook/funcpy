@@ -14,13 +14,20 @@
 ";" { return SEMICOLON; }
 "(" { return LPAREN; }
 ")" { return RPAREN; }
-"[" { return LBRACKET; }
-"]" { return RBRACKET; }
 "include" { return INCLUDE; }
 "," { return COMMA; }
 "\\" {
   return LAMBDA;
 }
+
+"[]" {
+  yylval.id = "[]";
+  return ID;
+}
+
+"[" { return LBRACKET; }
+"]" { return RBRACKET; }
+
 "~" { return MEMBER; }
 
 "{{"([}]?[^}])*"}}" {

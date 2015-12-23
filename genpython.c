@@ -36,7 +36,7 @@ void genpython(FILE *f, program_t *program) {
       while (args != NULL) {
         define_arg_params_t *first_arg_param = args->arg_params;
         define_arg_params_t *arg_param = args->arg_params;
-        fprintf(f, "fpy_%s = ", args->id);
+        fprintf(f, "%s = ", transform_name(args->id));
         while (arg_param != NULL) {
           fprintf(f, "lambda: lambda %s: ", arg_param->id);
           arg_param = arg_param->arg_params;

@@ -247,14 +247,14 @@ list:
     expression->func_call->args->args = malloc(sizeof(args_t));
 
     STRUCT_NEW(expression->func_call->args->args->expression, expression_t);
-    expression->func_call->args->args->expression->id = "emptylist";
+    expression->func_call->args->args->expression->id = "[]";
     expression->func_call->args->args->args = NULL;
     $$ = expression;
   }
   | {
     expression_t *expression;
     STRUCT_NEW(expression, expression_t);
-    expression->id = "emptylist";
+    expression->id = "[]";
     $$ = expression;
   }
 
