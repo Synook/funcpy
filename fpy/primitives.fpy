@@ -49,18 +49,13 @@ fpy_get = lambda: lambda t: lambda: lambda value: lambda: t().value(value)()
 fpy_type = lambda: lambda t: lambda: lambda option: lambda: "type" in dir(t()) and t().type(option)()
 }}
 
-# lists (dirty_print needs to know)
-List => (: head tail) [];
-head xs -> (get xs "head");
-tail xs -> (get xs "tail");
-
 {{ # dirty print
 fpy_dirty_print = lambda: lambda a: lambda: dirty_print(a)()
 def dirty_print (a):
   print(printr(a()))
   return a
 def printr (a, inside = False):
-  if type(a) == List and a.isa(lambda: ":")():
+  if isinstance(a, Type) and a.type(lambda: "List")() and a.isa(lambda: ":")():
     lstr = "%s:%s" % (printr(a.value(lambda: "head")(),True),printr(a.value(lambda: "tail")()))
     return "(%s)" % lstr if inside else lstr
   else: return a

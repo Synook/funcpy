@@ -16,7 +16,10 @@ flip f a b -> (f b a);
 id a -> a;
 const a b -> a;
 
-# list functions
+# lists
+List => (: head tail) [];
+head xs -> (get xs "head");
+tail xs -> (get xs "tail");
 empty xs -> (== xs []);
 foldr f v xs -> (? (empty xs)
   v (f (head xs) (foldr f v (tail xs)))
@@ -58,7 +61,7 @@ max a b -> (? (> a b) a b);
   [] (: a (.. (+ a 1) b))
 );
 
-# types
+# more types
 Maybe => (Just value) Nothing;
 fmap f v -> (case (type v "Maybe")
   (? (isa v "Just") (Just (f (get v "value"))) Nothing)
